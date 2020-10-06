@@ -1,6 +1,7 @@
 package me.sakigamiyang.actorblockchain.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
+import akka.cluster.pubsub.DistributedPubSubMediator.{Subscribe, SubscribeAck}
 import me.sakigamiyang.actorblockchain.blockchain.Transaction
 
 /**
@@ -21,9 +22,13 @@ class Broker extends Actor with ActorLogging {
     case GetTransactions =>
       log.info("Getting pending transactions")
       sender() ! pending
+    case DiffTransaction(externalTransactions) =>
+      pending = pending diff externalTransactions
     case Clear =>
       pending = List()
       log.info("Clear pending transaction List")
+    case SubscribeAck(Subscribe("transaction", None, `self`)) =>
+      log.info("subscribing")
   }
 }
 
@@ -31,7 +36,11 @@ object Broker {
 
   sealed trait BrokerMessage
 
+  case class TransactionMessage(transaction: Transaction) extends BrokerMessage
+
   case class AddTransaction(transaction: Transaction) extends BrokerMessage
+
+  case class DiffTransaction(transactions: List[Transaction]) extends BrokerMessage
 
   case object GetTransactions extends BrokerMessage
 
