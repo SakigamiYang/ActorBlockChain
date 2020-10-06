@@ -34,7 +34,7 @@ object ProofOfWork {
    * @param proof    proof
    * @return true if valid, false if not
    */
-  private def validProof(lastHash: String, proof: Long): Boolean = {
+  def validProof(lastHash: String, proof: Long): Boolean = {
     val guess = (lastHash ++ proof.toString).toJson.toString
     val guessHash = Crypto.sha256Hash(guess)
     (guessHash take 4) == "0000"
