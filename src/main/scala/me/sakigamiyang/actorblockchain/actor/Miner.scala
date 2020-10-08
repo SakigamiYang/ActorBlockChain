@@ -38,6 +38,9 @@ class Miner extends Actor with ActorLogging {
       }
       sender() ! proof
       become(busy)
+    case Ready =>
+      log.info("I'm ready to mine!")
+      sender() ! Success("OK")
   }
 
   def busy: Receive = validate orElse {

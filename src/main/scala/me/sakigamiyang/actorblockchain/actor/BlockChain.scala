@@ -40,19 +40,23 @@ class BlockChain(chain: Chain, nodeId: String) extends PersistentActor with Acto
       log.info(s"Snapshot ${metadata.sequenceNr} saved successfully")
     case SaveSnapshotFailure(metadata, reason) =>
       log.error(s"Error saving snapshot ${metadata.sequenceNr}: ${reason.getMessage}")
-    case AddBlockCommand(transactions: List[Transaction], proof: Long, timestamp) =>
-      persist(AddBlockEvent(transactions, proof, timestamp)) {
-        event => updateState(event)
+    case AddBlockCommand(transactions: List[Transaction], proof: Long, timestamp: Long) =>
+      persist(AddBlockEvent(transactions, proof, timestamp)) { event =>
+        updateState(event)
       }
       // This is a workaround to wait until the state is persisted
       deferAsync(Nil) { _ =>
         saveSnapshot(state)
         sender() ! state.chain.index
       }
-    case AddBlockCommand(_, _, _) => log.error("invalid add block command")
-    case GetChain => sender() ! state.chain
-    case GetLastHash => sender() ! state.chain.hash
-    case GetLastIndex => sender() ! state.chain.index
+    case AddBlockCommand(_, _, _) =>
+      log.error("invalid add block command")
+    case GetChain =>
+      sender() ! state.chain
+    case GetLastHash =>
+      sender() ! state.chain.hash
+    case GetLastIndex =>
+      sender() ! state.chain.index
   }
 }
 

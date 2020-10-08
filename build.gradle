@@ -43,4 +43,5 @@ dependencies {
     testCompile "org.scalatest:scalatest_$scala_compat_version:$scalatest_version"
     testCompile "com.dimafeng:testcontainers-scala-scalatest_$scala_compat_version:$testcontainers_scala_version"
     testCompile "com.vladsch.flexmark:flexmark-all:$flexmark_version"
+    testCompile "com.typesafe.akka:akka-testkit_2.12:$akka_version"
 }
